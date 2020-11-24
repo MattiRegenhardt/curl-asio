@@ -16,9 +16,12 @@ namespace curl
 	class initialization
 	{
 	public:
-		typedef boost::shared_ptr<initialization> ptr;
+		using ptr = std::shared_ptr<initialization>;
+
 		static ptr ensure_initialization();
+
 		~initialization();
+
 	protected:
 		initialization();
 	};

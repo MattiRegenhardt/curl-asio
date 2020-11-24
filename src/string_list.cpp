@@ -10,8 +10,8 @@
 
 using namespace curl;
 
-string_list::string_list():
-	list_(0)
+string_list::string_list() :
+		list_(0)
 {
 	initref_ = initialization::ensure_initialization();
 }
@@ -25,9 +25,9 @@ string_list::~string_list()
 	}
 }
 
-void string_list::add(const char* str)
+void string_list::add(const char *str)
 {
-	native::curl_slist* p = native::curl_slist_append(list_, str);
+	native::curl_slist *p = native::curl_slist_append(list_, str);
 
 	if (!p)
 	{
@@ -37,7 +37,7 @@ void string_list::add(const char* str)
 	list_ = p;
 }
 
-void string_list::add(const std::string& str)
+void string_list::add(const std::string &str)
 {
 	add(str.c_str());
 }

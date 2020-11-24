@@ -13,13 +13,13 @@
 
 using namespace curl;
 
-multi::multi(boost::asio::io_service& io_service):
-	io_service_(io_service),
-	timeout_(io_service),
-	still_running_(0)
+multi::multi(boost::asio::io_service &io_service) :
+		io_service_(io_service),
+		timeout_(io_service),
+		still_running_(0)
 {
 	initref_ = initialization::ensure_initialization();
-	handle_ = native::curl_multi_init();
+	handle_  = native::curl_multi_init();
 
 	if (!handle_)
 	{
@@ -37,8 +37,8 @@ multi::~multi()
 {
 	while (!easy_handles_.empty())
 	{
-		easy_set_type::iterator it = easy_handles_.begin();
-		easy* easy_handle = *it;
+		easy_set_type::iterator it           = easy_handles_.begin();
+		easy                    *easy_handle = *it;
 		easy_handle->cancel();
 	}
 
@@ -49,13 +49,13 @@ multi::~multi()
 	}
 }
 
-void multi::add(easy* easy_handle)
+void multi::add(easy *easy_handle)
 {
 	easy_handles_.insert(easy_handle);
 	add_handle(easy_handle->native_handle());
 }
 
-void multi::remove(easy* easy_handle)
+void multi::remove(easy *easy_handle)
 {
 	easy_set_type::iterator it = easy_handles_.find(easy_handle);
 
@@ -66,7 +66,7 @@ void multi::remove(easy* easy_handle)
 	}
 }
 
-void multi::socket_register(boost::shared_ptr<socket_info> si)
+void multi::socket_register(std::shared_ptr<socket_info> si)
 {
 	socket_type::native_handle_type fd = si->socket->native_handle();
 	sockets_.insert(socket_map_type::value_type(fd, si));
@@ -85,19 +85,19 @@ void multi::socket_cleanup(native::curl_socket_t s)
 	}
 }
 
-void multi::add_handle(native::CURL* native_easy)
+void multi::add_handle(native::CURL *native_easy)
 {
 	boost::system::error_code ec(native::curl_multi_add_handle(handle_, native_easy));
 	boost::asio::detail::throw_error(ec, "add_handle");
 }
 
-void multi::remove_handle(native::CURL* native_easy)
+void multi::remove_handle(native::CURL *native_easy)
 {
 	boost::system::error_code ec(native::curl_multi_remove_handle(handle_, native_easy));
 	boost::asio::detail::throw_error(ec, "remove_handle");
 }
 
-void multi::assign(native::curl_socket_t sockfd, void* user_data)
+void multi::assign(native::curl_socket_t sockfd, void *user_data)
 {
 	boost::system::error_code ec(native::curl_multi_assign(handle_, sockfd, user_data));
 	boost::asio::detail::throw_error(ec, "multi_assign");
@@ -120,7 +120,7 @@ void multi::set_socket_function(socket_function_t socket_function)
 	boost::asio::detail::throw_error(ec, "set_socket_function");
 }
 
-void multi::set_socket_data(void* socket_data)
+void multi::set_socket_data(void *socket_data)
 {
 	boost::system::error_code ec(native::curl_multi_setopt(handle_, native::CURLMOPT_SOCKETDATA, socket_data));
 	boost::asio::detail::throw_error(ec, "set_socket_data");
@@ -132,7 +132,7 @@ void multi::set_timer_function(timer_function_t timer_function)
 	boost::asio::detail::throw_error(ec, "set_timer_function");
 }
 
-void multi::set_timer_data(void* timer_data)
+void multi::set_timer_data(void *timer_data)
 {
 	boost::system::error_code ec(native::curl_multi_setopt(handle_, native::CURLMOPT_TIMERDATA, timer_data));
 	boost::asio::detail::throw_error(ec, "set_timer_data");
@@ -140,7 +140,7 @@ void multi::set_timer_data(void* timer_data)
 
 void multi::monitor_socket(socket_info_ptr si, int action)
 {
-	si->monitor_read = !!(action & CURL_POLL_IN);
+	si->monitor_read  = !!(action & CURL_POLL_IN);
 	si->monitor_write = !!(action & CURL_POLL_OUT);
 
 	if (!si->socket)
@@ -173,14 +173,14 @@ void multi::monitor_socket(socket_info_ptr si, int action)
 
 void multi::process_messages()
 {
-	native::CURLMsg* msg;
-	int msgs_left;
+	native::CURLMsg *msg;
+	int             msgs_left;
 
 	while ((msg = native::curl_multi_info_read(handle_, &msgs_left)))
 	{
 		if (msg->msg == native::CURLMSG_DONE)
 		{
-			easy* easy_handle = easy::from_native(msg->easy_handle);
+			easy                      *easy_handle = easy::from_native(msg->easy_handle);
 			boost::system::error_code ec;
 
 			if (msg->data.result != native::CURLE_OK)
@@ -202,16 +202,16 @@ bool multi::still_running()
 void multi::start_read_op(socket_info_ptr si)
 {
 	si->pending_read_op = true;
-	si->socket->async_read_some(boost::asio::null_buffers(), boost::bind(&multi::handle_socket_read, this, boost::asio::placeholders::error, si));
+	si->socket->async_read_some(boost::asio::null_buffers(), std::bind(&multi::handle_socket_read, this, std::placeholders::_1, si));
 }
 
-void multi::handle_socket_read(const boost::system::error_code& err, socket_info_ptr si)
+void multi::handle_socket_read(const boost::system::error_code &err, socket_info_ptr si)
 {
-    if (!si->socket)
-    {
-        si->pending_read_op = false;
-        return;
-    }
+	if (!si->socket)
+	{
+		si->pending_read_op = false;
+		return;
+	}
 
 	if (!err)
 	{
@@ -219,16 +219,20 @@ void multi::handle_socket_read(const boost::system::error_code& err, socket_info
 		process_messages();
 
 		if (si->monitor_read)
+		{
 			start_read_op(si);
+		}
 		else
+		{
 			si->pending_read_op = false;
+		}
 	}
 	else
 	{
 		if (err != boost::asio::error::operation_aborted)
 		{
 			socket_action(si->socket->native_handle(), CURL_CSELECT_ERR);
-			process_messages();			
+			process_messages();
 		}
 
 		si->pending_read_op = false;
@@ -238,16 +242,16 @@ void multi::handle_socket_read(const boost::system::error_code& err, socket_info
 void multi::start_write_op(socket_info_ptr si)
 {
 	si->pending_write_op = true;
-	si->socket->async_write_some(boost::asio::null_buffers(), boost::bind(&multi::handle_socket_write, this, boost::asio::placeholders::error, si));
+	si->socket->async_write_some(boost::asio::null_buffers(), std::bind(&multi::handle_socket_write, this, std::placeholders::_1, si));
 }
 
-void multi::handle_socket_write(const boost::system::error_code& err, socket_info_ptr si)
+void multi::handle_socket_write(const boost::system::error_code &err, socket_info_ptr si)
 {
-    if (!si->socket)
-    {
-        si->pending_write_op = false;
-        return;
-    }
+	if (!si->socket)
+	{
+		si->pending_write_op = false;
+		return;
+	}
 
 	if (!err)
 	{
@@ -255,9 +259,13 @@ void multi::handle_socket_write(const boost::system::error_code& err, socket_inf
 		process_messages();
 
 		if (si->monitor_write)
+		{
 			start_write_op(si);
+		}
 		else
+		{
 			si->pending_write_op = false;
+		}
 	}
 	else
 	{
@@ -271,7 +279,7 @@ void multi::handle_socket_write(const boost::system::error_code& err, socket_inf
 	}
 }
 
-void multi::handle_timeout(const boost::system::error_code& err)
+void multi::handle_timeout(const boost::system::error_code &err)
 {
 	if (!err)
 	{
@@ -294,21 +302,21 @@ multi::socket_info_ptr multi::get_socket_from_native(native::curl_socket_t nativ
 	}
 }
 
-int multi::socket(native::CURL* native_easy, native::curl_socket_t s, int what, void* userp, void* socketp)
+int multi::socket(native::CURL *native_easy, native::curl_socket_t s, int what, void *userp, void *socketp)
 {
-	multi* self = static_cast<multi*>(userp);
+	multi *self = static_cast<multi *>(userp);
 
 	if (what == CURL_POLL_REMOVE)
 	{
 		// stop listening for events
-		socket_info_ptr* si = static_cast<socket_info_ptr*>(socketp);
+		socket_info_ptr *si = static_cast<socket_info_ptr *>(socketp);
 		self->monitor_socket(*si, CURL_POLL_NONE);
 		delete si;
 	}
 	else if (socketp)
 	{
 		// change direction
-		socket_info_ptr* si = static_cast<socket_info_ptr*>(socketp);
+		socket_info_ptr *si = static_cast<socket_info_ptr *>(socketp);
 		(*si)->handle = easy::from_native(native_easy);
 		self->monitor_socket(*si, what);
 	}
@@ -317,7 +325,10 @@ int multi::socket(native::CURL* native_easy, native::curl_socket_t s, int what, 
 		// register the socket
 		socket_info_ptr si = self->get_socket_from_native(s);
 		if (!si)
-			throw std::invalid_argument("bad socket");
+		{
+			// FIXME: not sure if this is actually correct!
+			si = std::make_shared<socket_info>(easy::from_native(native_easy), nullptr);
+		}
 		si->handle = easy::from_native(native_easy);
 		self->assign(s, new socket_info_ptr(si));
 		self->monitor_socket(si, what);
@@ -330,14 +341,14 @@ int multi::socket(native::CURL* native_easy, native::curl_socket_t s, int what, 
 	return 0;
 }
 
-int multi::timer(native::CURLM* native_multi, long timeout_ms, void* userp)
+int multi::timer(native::CURLM *native_multi, long timeout_ms, void *userp)
 {
-	multi* self = static_cast<multi*>(userp);
+	multi *self = static_cast<multi *>(userp);
 
 	if (timeout_ms > 0)
 	{
 		self->timeout_.expires_from_now(boost::posix_time::millisec(timeout_ms));
-		self->timeout_.async_wait(boost::bind(&multi::handle_timeout, self, boost::asio::placeholders::error));
+		self->timeout_.async_wait(std::bind(&multi::handle_timeout, self, std::placeholders::_1));
 	}
 	else
 	{

@@ -11,24 +11,25 @@
 #include <boost/weak_ptr.hpp>
 #include <curl-asio/initialization.h>
 #include <curl-asio/native.h>
+#include <mutex>
 
 using namespace curl;
 
-boost::weak_ptr<initialization> helper_instance;
-boost::mutex helper_lock;
+std::weak_ptr<initialization> helper_instance;
+std::mutex                    helper_lock;
 
 initialization::ptr initialization::ensure_initialization()
 {
 	ptr result = helper_instance.lock();
-	
+
 	if (!result)
 	{
-		boost::lock_guard<boost::mutex> lock(helper_lock);
+		std::unique_lock<std::mutex> lock(helper_lock);
 		result = helper_instance.lock();
 
 		if (!result)
 		{
-			result = boost::shared_ptr<initialization>(new initialization());
+			result.reset(new initialization());
 			helper_instance = result;
 		}
 	}

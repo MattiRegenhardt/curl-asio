@@ -15,7 +15,7 @@ using namespace curl;
 share::share()
 {
 	initref_ = initialization::ensure_initialization();
-	handle_ = native::curl_share_init();
+	handle_  = native::curl_share_init();
 
 	if (!handle_)
 	{
@@ -66,20 +66,20 @@ void share::set_unlock_function(unlock_function_t unlock_function)
 	boost::asio::detail::throw_error(ec);
 }
 
-void share::set_user_data(void* user_data)
+void share::set_user_data(void *user_data)
 {
 	boost::system::error_code ec(native::curl_share_setopt(handle_, native::CURLSHOPT_USERDATA, user_data));
 	boost::asio::detail::throw_error(ec);
 }
 
-void share::lock(native::CURL* handle, native::curl_lock_data data, native::curl_lock_access access, void* userptr)
+void share::lock(native::CURL *handle, native::curl_lock_data data, native::curl_lock_access access, void *userptr)
 {
-	share* self = static_cast<share*>(userptr);
+	share *self = static_cast<share *>(userptr);
 	self->mutex_.lock();
 }
 
-void share::unlock(native::CURL* handle, native::curl_lock_data data, void* userptr)
+void share::unlock(native::CURL *handle, native::curl_lock_data data, void *userptr)
 {
-	share* self = static_cast<share*>(userptr);
+	share *self = static_cast<share *>(userptr);
 	self->mutex_.unlock();
 }

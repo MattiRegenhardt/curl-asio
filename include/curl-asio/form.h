@@ -9,44 +9,64 @@
 #pragma once
 
 #include "config.h"
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/noncopyable.hpp>
+#include <memory>
 #include <string>
+#include <boost/noncopyable.hpp>
 #include "initialization.h"
 #include "native.h"
 
 namespace curl
 {
-	class CURLASIO_API form:
-		public boost::enable_shared_from_this<form>,
-		public boost::noncopyable
+	class CURLASIO_API form :
+			public std::enable_shared_from_this<form>,
+			public boost::noncopyable
 	{
 	public:
 		form();
+
 		~form();
 
-		inline native::curl_httppost* native_handle() { return post_; };
+		inline native::curl_httppost *native_handle()
+		{
+			return post_;
+		};
 
-		void add_content(const std::string& key, const std::string& content);
-		void add_content(const std::string& key, const std::string& content, boost::system::error_code& ec);
-		void add_content(const std::string& key, const std::string& content, const std::string& content_type);
-		void add_content(const std::string& key, const std::string& content, const std::string& content_type, boost::system::error_code& ec);
-		void add_file(const std::string& key, const std::string& file_path);
-		void add_file(const std::string& key, const std::string& file_path, boost::system::error_code& ec);
-		void add_file(const std::string& key, const std::string& file_path, const std::string& content_type);
-		void add_file(const std::string& key, const std::string& file_path, const std::string& content_type, boost::system::error_code& ec);
-		void add_file_using_name(const std::string& key, const std::string& file_path, const std::string& file_name);
-		void add_file_using_name(const std::string& key, const std::string& file_path, const std::string& file_name, boost::system::error_code& ec);
-		void add_file_using_name(const std::string& key, const std::string& file_path, const std::string& file_name, const std::string& content_type);
-		void add_file_using_name(const std::string& key, const std::string& file_path, const std::string& file_name, const std::string& content_type, boost::system::error_code& ec);
-		void add_file_content(const std::string& key, const std::string& file_path);
-		void add_file_content(const std::string& key, const std::string& file_path, boost::system::error_code& ec);
-		void add_file_content(const std::string& key, const std::string& file_path, const std::string& content_type);
-		void add_file_content(const std::string& key, const std::string& file_path, const std::string& content_type, boost::system::error_code& ec);
+		void add_content(const std::string &key, const std::string &content);
+
+		void add_content(const std::string &key, const std::string &content, boost::system::error_code &ec);
+
+		void add_content(const std::string &key, const std::string &content, const std::string &content_type);
+
+		void add_content(const std::string &key, const std::string &content, const std::string &content_type, boost::system::error_code &ec);
+
+		void add_file(const std::string &key, const std::string &file_path);
+
+		void add_file(const std::string &key, const std::string &file_path, boost::system::error_code &ec);
+
+		void add_file(const std::string &key, const std::string &file_path, const std::string &content_type);
+
+		void add_file(const std::string &key, const std::string &file_path, const std::string &content_type, boost::system::error_code &ec);
+
+		void add_file_using_name(const std::string &key, const std::string &file_path, const std::string &file_name);
+
+		void add_file_using_name(const std::string &key, const std::string &file_path, const std::string &file_name, boost::system::error_code &ec);
+
+		void add_file_using_name(const std::string &key, const std::string &file_path, const std::string &file_name, const std::string &content_type);
+
+		void
+		add_file_using_name(const std::string &key, const std::string &file_path, const std::string &file_name, const std::string &content_type, boost::system::error_code &ec);
+
+		void add_file_content(const std::string &key, const std::string &file_path);
+
+		void add_file_content(const std::string &key, const std::string &file_path, boost::system::error_code &ec);
+
+		void add_file_content(const std::string &key, const std::string &file_path, const std::string &content_type);
+
+		void add_file_content(const std::string &key, const std::string &file_path, const std::string &content_type, boost::system::error_code &ec);
 
 	private:
 		initialization::ptr initref_;
-		native::curl_httppost* post_;
-		native::curl_httppost* last_;
+		native::curl_httppost *post_;
+		native::curl_httppost *last_;
 	};
 }
