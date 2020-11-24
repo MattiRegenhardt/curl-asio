@@ -36,7 +36,7 @@ if (BUILD_SHARED)
                 ${Boost_INCLUDE_DIR}
         )
     endif()
-    if (TARGET curl::libcurl)
+    if (TARGET CURL::libcurl)
         target_link_libraries(
                 curlasio-shared
                 PUBLIC
@@ -90,12 +90,6 @@ if (BUILD_STATIC)
             ${LIBCURLASIO_SOURCE_FILES}
             ${LIBCURLASIO_HEADER_FILES}
     )
-    target_link_libraries(
-            curlasio-static
-            PUBLIC
-            ${Boost_LIBRARIES}
-            ${CURL_LIBRARIES}
-    )
     if (TARGET Boost::boost AND TARGET Boost::system)
         target_link_libraries(
                 curlasio-static
@@ -115,7 +109,7 @@ if (BUILD_STATIC)
                 ${Boost_INCLUDE_DIR}
         )
     endif()
-    if (TARGET curl::libcurl)
+    if (TARGET CURL::libcurl)
         target_link_libraries(
                 curlasio-static
                 PUBLIC
