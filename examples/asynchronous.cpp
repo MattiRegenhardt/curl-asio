@@ -39,14 +39,14 @@ void start_download(curl::multi &multi, const std::string &url)
 int main(int argc, char *argv[])
 {
 	// expect one argument
-	/*if (argc != 2)
+	if (argc != 2)
 	{
 		std::cerr << "usage: " << argv[0] << " url-list-file" << std::endl;
 		return 1;
-	}*/
+	}
 
 	// this example program downloads all urls in the text file argv[1] to the current directory
-	char *url_file_name = "urls.txt";//argv[1];
+	char *url_file_name = argv[1];
 
 	// start by creating an io_service object
 	boost::asio::io_service io_service;

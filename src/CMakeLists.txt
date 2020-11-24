@@ -68,6 +68,12 @@ if (BUILD_SHARED)
             curlasio-shared
             PUBLIC
             $<$<BOOL:${CURL_IS_STATIC}>:CURL_STATICLIB>
+            BOOST_NO_EXCEPTIONS=1
+    )
+    target_compile_definitions(
+            curlasio-shared
+            PRIVATE
+            BOOST_USE_WINDOWS_H=1
     )
     set_target_properties(
             curlasio-shared
@@ -142,6 +148,12 @@ if (BUILD_STATIC)
             PUBLIC
             $<$<BOOL:${CURL_IS_STATIC}>:CURL_STATICLIB>
             CURLASIO_STATIC
+            BOOST_NO_EXCEPTIONS=1
+    )
+    target_compile_definitions(
+            curlasio-static
+            PRIVATE
+            BOOST_USE_WINDOWS_H=1
     )
     set_target_properties(
             curlasio-static

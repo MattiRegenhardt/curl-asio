@@ -9,8 +9,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/thread.hpp>
 #include <boost/weak_ptr.hpp>
-#include <curl-asio/initialization.h>
 #include <curl-asio/native.h>
+#include <curl-asio/initialization.h>
 #include <mutex>
 
 using namespace curl;
@@ -41,10 +41,14 @@ initialization::initialization()
 {
 	native::CURLcode ec = native::curl_global_init(CURL_GLOBAL_DEFAULT);
 
+#if defined(__cpp_exceptions)
 	if (ec != native::CURLE_OK)
 	{
 		throw std::runtime_error("curl_global_init failed with error code " + boost::lexical_cast<std::string>(ec));
 	}
+#else
+	assert(ec == native::CURLE_OK);
+#endif
 }
 
 initialization::~initialization()

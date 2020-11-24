@@ -21,10 +21,14 @@ multi::multi(boost::asio::io_service &io_service) :
 	initref_ = initialization::ensure_initialization();
 	handle_  = native::curl_multi_init();
 
+#if defined(__cpp_exceptions)
 	if (!handle_)
 	{
 		throw std::bad_alloc();
 	}
+#else
+	assert(handle_);
+#endif
 
 	set_socket_function(&multi::socket);
 	set_socket_data(this);
@@ -335,7 +339,11 @@ int multi::socket(native::CURL *native_easy, native::curl_socket_t s, int what, 
 	}
 	else
 	{
+#if defined(__cpp_exceptions)
 		throw std::invalid_argument("neither socketp nor native_easy were set");
+#else
+		std::abort();
+#endif
 	}
 
 	return 0;

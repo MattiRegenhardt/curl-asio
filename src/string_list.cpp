@@ -29,10 +29,14 @@ void string_list::add(const char *str)
 {
 	native::curl_slist *p = native::curl_slist_append(list_, str);
 
+#if defined(__cpp_exceptions)
 	if (!p)
 	{
 		throw std::bad_alloc();
 	}
+#else
+	assert(p);
+#endif
 
 	list_ = p;
 }

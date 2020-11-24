@@ -6,7 +6,6 @@
 	C++ wrapper for libcurl's easy interface
 */
 
-#include <boost/make_shared.hpp>
 #include <curl-asio/easy.h>
 #include <curl-asio/error_code.h>
 #include <curl-asio/form.h>
@@ -59,10 +58,14 @@ void easy::perform()
 
 void easy::perform(boost::system::error_code &ec)
 {
+#if defined(__cpp_exceptions)
 	if (multi_)
 	{
 		throw std::runtime_error("attempt to perform synchronous operation while being attached to a multi object");
 	}
+#else
+	assert(!multi_);
+#endif
 
 	ec = boost::system::error_code(native::curl_easy_perform(handle_));
 
@@ -74,10 +77,14 @@ void easy::perform(boost::system::error_code &ec)
 
 void easy::async_perform(handler_type handler)
 {
+#if defined(__cpp_exceptions)
 	if (!multi_)
 	{
 		throw std::runtime_error("attempt to perform async. operation without assigning a multi object");
 	}
+#else
+	assert(multi_);
+#endif
 
 	// Cancel all previous async. operations
 	cancel();
@@ -507,10 +514,14 @@ void easy::init()
 	initref_ = initialization::ensure_initialization();
 	handle_  = native::curl_easy_init();
 
+#if defined(__cpp_exceptions)
 	if (!handle_)
 	{
 		throw std::bad_alloc();
 	}
+#else
+	assert(handle_);
+#endif
 
 	set_private(this);
 }

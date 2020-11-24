@@ -149,3 +149,13 @@ const boost::system::error_category &errc::get_form_category() BOOST_NOEXCEPT
 	static const curl_form_error_category curl_form_category_const;
 	return curl_form_category_const;
 }
+
+#if defined(BOOST_NO_EXCEPTIONS) && BOOST_NO_EXCEPTIONS
+namespace boost
+{
+	void throw_exception( std::exception const & e )
+	{
+		std::abort();
+	}
+}
+#endif

@@ -17,10 +17,14 @@ share::share()
 	initref_ = initialization::ensure_initialization();
 	handle_  = native::curl_share_init();
 
+#if defined(__cpp_exceptions)
 	if (!handle_)
 	{
 		throw std::bad_alloc();
 	}
+#else
+	assert(handle_);
+#endif
 
 	set_lock_function(&share::lock);
 	set_unlock_function(&share::unlock);
