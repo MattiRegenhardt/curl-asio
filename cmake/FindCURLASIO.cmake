@@ -47,7 +47,7 @@ else ()
     endif ()
 endif ()
 
-if (NOT TARGET curl::libcurl)
+if (NOT TARGET CURL::libcurl)
     find_package(CURLASIO-CURL REQUIRED)
     set(CURLASIO_INCLUDE_DIRS ${CURLASIO_INCLUDE_DIR} ${CURL_INCLUDE_DIR})
 
@@ -55,7 +55,7 @@ if (NOT TARGET curl::libcurl)
         list(APPEND CURLASIO_LIBRARIES ${CURL_LIBRARIES})
     endif ()
 else()
-    list(APPEND CURLASIO_LIBRARIES curl::libcurl)
+    list(APPEND CURLASIO_LIBRARIES CURL::libcurl)
 endif()
 
 include(FindPackageHandleStandardArgs)

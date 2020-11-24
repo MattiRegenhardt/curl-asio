@@ -19,7 +19,7 @@ endif ()
 
 set(CURLASIO_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-if (NOT TARGET curl::libcurl)
+if (NOT TARGET CURL::libcurl)
     find_package(CURLASIO-CURL REQUIRED)
 endif()
 if (NOT TARGET Boost::boost OR NOT TARGET Boost::system)

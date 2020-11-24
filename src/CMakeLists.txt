@@ -40,7 +40,7 @@ if (BUILD_SHARED)
         target_link_libraries(
                 curlasio-shared
                 PUBLIC
-                curl::libcurl
+                CURL::libcurl
         )
     else()
         target_link_libraries(
@@ -119,7 +119,7 @@ if (BUILD_STATIC)
         target_link_libraries(
                 curlasio-static
                 PUBLIC
-                curl::libcurl
+                CURL::libcurl
         )
     else()
         target_link_libraries(
