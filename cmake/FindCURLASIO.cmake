@@ -47,12 +47,16 @@ else ()
     endif ()
 endif ()
 
-find_package(CURLASIO-CURL REQUIRED)
-set(CURLASIO_INCLUDE_DIRS ${CURLASIO_INCLUDE_DIR} ${CURL_INCLUDE_DIR})
+if (NOT TARGET curl::libcurl)
+    find_package(CURLASIO-CURL REQUIRED)
+    set(CURLASIO_INCLUDE_DIRS ${CURLASIO_INCLUDE_DIR} ${CURL_INCLUDE_DIR})
 
-if (CURLASIO_STATIC)
-    list(APPEND CURLASIO_LIBRARIES ${CURL_LIBRARIES})
-endif ()
+    if (CURLASIO_STATIC)
+        list(APPEND CURLASIO_LIBRARIES ${CURL_LIBRARIES})
+    endif ()
+else()
+    list(APPEND CURLASIO_LIBRARIES curl::libcurl)
+endif()
 
 include(FindPackageHandleStandardArgs)
 

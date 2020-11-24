@@ -19,8 +19,12 @@ endif ()
 
 set(CURLASIO_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-find_package(CURLASIO-CURL REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system)
+if (NOT TARGET curl::libcurl)
+    find_package(CURLASIO-CURL REQUIRED)
+endif()
+if (NOT TARGET Boost::boost OR NOT TARGET Boost::system)
+    find_package(Boost REQUIRED COMPONENTS system)
+endif()
 
 add_subdirectory(src)
 if (BUILD_EXAMPLES)

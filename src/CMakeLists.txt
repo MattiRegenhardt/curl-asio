@@ -17,18 +17,47 @@ if (BUILD_SHARED)
             ${LIBCURLASIO_SOURCE_FILES}
             ${LIBCURLASIO_HEADER_FILES}
     )
-    target_link_libraries(
-            curlasio-shared
-            PUBLIC
-            ${Boost_LIBRARIES}
-            ${CURL_LIBRARIES}
-    )
+    if (TARGET Boost::boost AND TARGET Boost::system)
+        target_link_libraries(
+                curlasio-shared
+                PUBLIC
+                Boost::boost
+                Boost::system
+        )
+    else()
+        target_link_libraries(
+                curlasio-shared
+                PUBLIC
+                ${Boost_LIBRARIES}
+        )
+        target_include_directories(
+                curlasio-shared
+                PUBLIC
+                ${Boost_INCLUDE_DIR}
+        )
+    endif()
+    if (TARGET curl::libcurl)
+        target_link_libraries(
+                curlasio-shared
+                PUBLIC
+                curl::libcurl
+        )
+    else()
+        target_link_libraries(
+                curlasio-shared
+                PUBLIC
+                ${CURL_LIBRARIES}
+        )
+        target_include_directories(
+                curlasio-shared
+                PUBLIC
+                ${CURL_INCLUDE_DIR}
+        )
+    endif()
     target_include_directories(
             curlasio-shared
             PUBLIC
             ${LIBCURLASIO_HEADER_DIR}
-            ${Boost_INCLUDE_DIR}
-            ${CURL_INCLUDE_DIR}
     )
     target_compile_features(
             curlasio-shared
@@ -67,12 +96,47 @@ if (BUILD_STATIC)
             ${Boost_LIBRARIES}
             ${CURL_LIBRARIES}
     )
+    if (TARGET Boost::boost AND TARGET Boost::system)
+        target_link_libraries(
+                curlasio-static
+                PUBLIC
+                Boost::boost
+                Boost::system
+        )
+    else()
+        target_link_libraries(
+                curlasio-static
+                PUBLIC
+                ${Boost_LIBRARIES}
+        )
+        target_include_directories(
+                curlasio-static
+                PUBLIC
+                ${Boost_INCLUDE_DIR}
+        )
+    endif()
+    if (TARGET curl::libcurl)
+        target_link_libraries(
+                curlasio-static
+                PUBLIC
+                curl::libcurl
+        )
+    else()
+        target_link_libraries(
+                curlasio-static
+                PUBLIC
+                ${CURL_LIBRARIES}
+        )
+        target_include_directories(
+                curlasio-static
+                PUBLIC
+                ${CURL_INCLUDE_DIR}
+        )
+    endif()
     target_include_directories(
             curlasio-static
             PUBLIC
             ${LIBCURLASIO_HEADER_DIR}
-            ${Boost_INCLUDE_DIR}
-            ${CURL_INCLUDE_DIR}
     )
     target_compile_features(
             curlasio-static
